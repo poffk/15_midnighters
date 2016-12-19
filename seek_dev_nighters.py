@@ -10,7 +10,13 @@ NIGHT_END = 7
 
 def load_attempts():
     api_page_json = requests.get(URL, params={'page': '1'}).json()
-    for page in range(1, api_page_json['number_of_pages']):
+    for attemp in api_page_json['records']:
+        yield {
+            'username': attemp['username'],
+            'timestamp': attemp['timestamp'],
+            'timezone': attemp['timezone'],
+        }
+    for page in range(2, api_page_json['number_of_pages']):
         api_page_json = requests.get(URL, params={'page': page}).json()
         for attemp in api_page_json['records']:
             yield {
@@ -20,8 +26,8 @@ def load_attempts():
             }
 
 
-def filtering_incorrect_attempts(attempts):
-    return list(filter(lambda attempt: attempt['timestamp'], attempts))
+def filter_incorrect_attempts(attempts):
+    return filter(lambda attempt: attempt['timestamp'], attempts)
 
 
 def get_midnighters(attempts):
@@ -35,5 +41,5 @@ def get_midnighters(attempts):
 
 
 if __name__ == '__main__':
-    filtered_attempts = filtering_incorrect_attempts(load_attempts())
+    filtered_attempts = filter_incorrect_attempts(load_attempts())
     print(get_midnighters(filtered_attempts))
