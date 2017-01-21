@@ -10,14 +10,9 @@ NIGHT_END = 7
 
 def load_attempts():
     api_page_json = requests.get(URL, params={'page': '1'}).json()
-    for attemp in api_page_json['records']:
-        yield {
-            'username': attemp['username'],
-            'timestamp': attemp['timestamp'],
-            'timezone': attemp['timezone'],
-        }
-    for page in range(2, api_page_json['number_of_pages']):
-        api_page_json = requests.get(URL, params={'page': page}).json()
+    for page in range(1, api_page_json['number_of_pages']):
+        if page != 1:
+            api_page_json = requests.get(URL, params={'page': page}).json()
         for attemp in api_page_json['records']:
             yield {
                 'username': attemp['username'],
